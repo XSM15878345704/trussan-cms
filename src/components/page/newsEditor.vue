@@ -1,35 +1,32 @@
 <template>
-     <el-col :span="12" :offset="4">
-            <el-form :model="formData" :rules="rules" ref="formData" label-width="110px" class="demo-formData">
-                <el-form-item label="文章标题" prop="name">
-                    <el-input v-model="formData.name"></el-input>
-                </el-form-item>
-                <el-form-item label="发布时间" prop="time">
-                    <el-date-picker
-                      v-model="formData.time"
-                      type="date"
-                      placeholder="选择日期">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="文章转自" prop="author">
-                    <el-input v-model="formData.author"></el-input>
-                    <p>文章出处</p>
-                </el-form-item>
-              <quill-editor ref="myTextEditor"
-                  v-model="formData.content"
-                  :config="editorOption"
-                  @blur="onEditorBlur($event)"
-                  @focus="onEditorFocus($event)"
-                  @ready="onEditorReady($event)">
-            </quill-editor>
-        <el-button class="editor-btn" type="primary" @click="isSubmit">发布</el-button>
-        <el-button class="editor-btn" type="primary" @click="draftFn">存草稿</el-button>
-            </el-form>
-        </el-col>
+  <el-col :span="24" :offset="4">
+    <el-form :model="formData" :rules="rules" ref="formData" label-width="110px" class="demo-formData">
+      <el-form-item label="文章标题" prop="name">
+        <el-input v-model="formData.name"></el-input>
+      </el-form-item>
+      <el-form-item label="发布时间" prop="time">
+        <el-date-picker v-model="formData.time" type="date" placeholder="选择日期">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="文章转自" prop="author">
+        <el-input v-model="formData.author"></el-input>
+        <p>文章出处</p>
+      </el-form-item>
+      <quill-editor ref="myTextEditor" v-model="formData.content" :config="editorOption" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)"
+        @ready="onEditorReady($event)">
+      </quill-editor>
+      <el-button class="editor-btn" type="primary" @click="isSubmit">发布</el-button>
+      <el-button class="editor-btn" type="primary" @click="draftFn">存草稿</el-button>
+    </el-form>
+  </el-col>
 </template>
 <script>
-import { quillRedefine } from 'vue-quill-editor-upload';
-import { quillEditor } from 'vue-quill-editor';
+import {
+  quillRedefine,
+} from 'vue-quill-editor-upload';
+import {
+  quillEditor,
+} from 'vue-quill-editor';
 
 export default {
   data() {
@@ -47,11 +44,17 @@ export default {
       },
       uploadType: '',
       rules: {
-        name: [{ required: true, message: '请输入文章标题', trigger: 'blur' }],
+        name: [{
+          required: true,
+          message: '请输入文章标题',
+          trigger: 'blur',
+        }],
 
-        author: [
-          { required: true, message: '请输入发表作者', trigger: 'blur' },
-        ],
+        author: [{
+          required: true,
+          message: '请输入发表作者',
+          trigger: 'blur',
+        }],
       },
       content: '',
       editorOption: {
@@ -60,7 +63,8 @@ export default {
     };
   },
   components: {
-    quillEditor, quillRedefine, // 注册组件
+    quillEditor,
+    quillRedefine, // 注册组件
   },
   computed: {
     editor() {
@@ -77,6 +81,7 @@ export default {
       .addHandler('video', this.videoHandler); // 为视频ICON绑定事件
   },
   methods: {
+
     // 点击图片ICON触发事件
     imgHandler(state) {
       console.log('图片');
@@ -122,7 +127,7 @@ export default {
     isSubmit() {
       const params = this.formData;
       console.log(params.author);
-      let addUrl = '/addData';
+      const addUrl = '/addData';
       this.$axios.post(addUrl, params).then((res) => {
         console.log(res);
       }).catch((err) => {
@@ -137,39 +142,45 @@ export default {
     },
   },
 };
+
 </script>
 <style>
-.el-form-item__label {
-  text-align: center;
-}
-.avatar-uploader .el-upload {
-  width: 120px;
-  height: 120px;
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #20a0ff;
-}
-.avatar-uploader {
-  width: 120px;
-  height: 120px;
-}
-.avatar-uploader-icon {
-  font-size: 14px;
-  color: #8c939d;
-  width: 120px;
-  height: 120px;
-  line-height: 120px;
-  text-align: center;
-}
-.avatar {
-  width: 120px;
-  height: 120px;
-  display: block;
-}
-</style>
+  .el-form-item__label {
+    text-align: center;
+  }
 
+  .avatar-uploader .el-upload {
+    width: 120px;
+    height: 120px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .avatar-uploader .el-upload:hover {
+    border-color: #20a0ff;
+  }
+
+  .avatar-uploader {
+    width: 120px;
+    height: 120px;
+  }
+
+  .avatar-uploader-icon {
+    font-size: 14px;
+    color: #8c939d;
+    width: 120px;
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    display: block;
+  }
+
+</style>

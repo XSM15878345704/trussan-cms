@@ -48,6 +48,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'semi': ['error', 'always'],
     'func-names': 0,
-    'default-case': 0
+    'default-case': 0,
+    'no-plusplus': 0,
   }
 }

@@ -7,7 +7,7 @@
             <el-button type="primary" class="handle-del mr10" @click="cancleAll" v-if="is_nodel">取消</el-button>
              <el-button type="primary" icon="plus" class="handle-del mr10 addbtn" @click="addAll">添加文章</el-button>
         </div>
-        <el-table :data="tableData2" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+        <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" v-if="is_nodel"></el-table-column>
             <el-table-column prop="create_time" label="日期" sortable width="150">
             </el-table-column>
@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       url: './static/vuetable.json',
-      tableData: [],
+      tableData: [{}],
       cur_page: 1,
       multipleSelection: [],
       select_cate: '',
@@ -53,20 +53,11 @@ export default {
       del_list: [],
       is_del: true,
       is_nodel: false,
-      tableData2: [],
       thisPath: this.$route.params.type,
     };
   },
   created() {
     this.getList(this.statusMap[this.type || 0]);
-    // const self = this;
-    // const selectUrl = '/select';
-    // self.$axios.get(self.url).then((res) => {
-    //   self.tableData2 = res.data.list;
-    //   self.$axios.get(selectUrl).then((res) => {
-    //     console.log(res);
-    //   });
-    // });
   },
   watch: {
     '$route.path': function () {
@@ -90,33 +81,12 @@ export default {
         video: 5,
       };
     },
-    // data() {
-    //   const self = this;
-    //   return self.tableData.filter(function(d) {
-    //     let is_del = false;
-    //     for (let i = 0; i < self.del_list.length; i++) {
-    //       if (d.name === self.del_list[i].name) {
-    //         is_del = true;
-    //         break;
-    //       }
-    //     }
-    //     if (!is_del) {
-    //       if (
-    //         d.address.indexOf(self.select_cate) > -1 &&
-    //         (d.name.indexOf(self.select_word) > -1 ||
-    //           d.address.indexOf(self.select_word) > -1)
-    //       ) {
-    //         return d;
-    //       }
-    //     }
-    //   });
-    // }
   },
   methods: {
     getList(status) {
       api.getList(status)
         .then((res) => {
-          this.tableData2 = res.data;
+          this.tableData = res.data;
           console.log(res.data);
         });
     },
@@ -129,9 +99,6 @@ export default {
       if (process.env.NODE_ENV === 'development') {
         self.url = '/ms/table/list';
       }
-      // self.$axios.post(self.url, {page:self.cur_page}).then((res) => {
-      //     self.tableData = res.data.list;
-      // })
     },
     search() {
       this.is_search = true;
@@ -167,7 +134,6 @@ export default {
           break;
 
         default:
-          return false;
           break;
       }
 
@@ -187,22 +153,21 @@ export default {
       self.is_del = true;
     },
     delAll() {
-      const self = this,
-        length = self.multipleSelection.length;
+      const length = this.multipleSelection.length;
       let str = '';
-      self.del_list = self.del_list.concat(self.multipleSelection);
+      this.del_list = this.del_list.concat(this.multipleSelection);
 
       for (let i = 0; i < length; i++) {
-        str += `${self.multipleSelection[i].name} `;
+        str += `${this.multipleSelection[i].name} `;
       }
-      if (self.multipleSelection.length == 0) {
-        self.$message({
+      if (this.multipleSelection.length === 0) {
+        this.$message({
           message: '请选择要删除的数据',
           type: 'warning',
         });
       }
       console.log(str);
-      self.$message.error(`删除了${str}`);
+      this.$message.error(`删除了${str}`);
     },
     addAll() {
       const self = this;

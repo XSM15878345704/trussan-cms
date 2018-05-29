@@ -9,27 +9,34 @@
         </div>
         <el-table :data="tableData2" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" v-if="is_nodel"></el-table-column>
-            <el-table-column prop="create_time" label="日期" sortable width="150">
+             <el-table-column prop="time" :formatter="getTime" label="时间" sortable >
+
+            </el-table-column>
+            <el-table-column prop="title" label="标题" >
             </el-table-column>
             <el-table-column prop="author" label="作者" width="120">
             </el-table-column>
-            <el-table-column prop="content" label="文章内容" :formatter="formatter">
+            <el-table-column label="发布状态" width="120">
+              <template slot-scope="scope">
+                {{ scope.row.publish == 1 ? '发布' : '存草稿' }}
+            </template>
             </el-table-column>
             <el-table-column label="操作" width="180">
                 <template slot-scope="scope">
 
                     <el-button size="small"
-                            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                            @click="handleEdit(scope.$index, scope)">编辑</el-button>
                     <el-button size="small" type="danger"
-                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                            @click="handleDelete(scope.$index, scope.row,scope)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="pagination">
             <el-pagination
                     @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
-                    :total="1000">
+                    :page-size="10"
+                    layout="total, prev, pager, next"
+                    :total="cTotal">
             </el-pagination>
         </div>
     </div>
@@ -39,12 +46,11 @@
 <script>
 
 import api from '@/api';
-
+import getDate from '@/date';
 
 export default {
   data() {
     return {
-      url: './static/vuetable.json',
       tableData: [],
       cur_page: 1,
       multipleSelection: [],
@@ -55,6 +61,7 @@ export default {
       is_nodel: false,
       tableData2: [],
       thisPath: this.$route.params.type,
+      cTotal: 0,
     };
   },
   created() {
@@ -72,6 +79,7 @@ export default {
     '$route.path': function () {
       this.thisPath = this.$route.path;
       this.getList(this.statusMap[this.type || 0]);
+      console.log(this.statusMap[this.type || 0]);
     },
   },
   computed: {
@@ -90,51 +98,37 @@ export default {
         video: 5,
       };
     },
-    // data() {
-    //   const self = this;
-    //   return self.tableData.filter(function(d) {
-    //     let is_del = false;
-    //     for (let i = 0; i < self.del_list.length; i++) {
-    //       if (d.name === self.del_list[i].name) {
-    //         is_del = true;
-    //         break;
-    //       }
-    //     }
-    //     if (!is_del) {
-    //       if (
-    //         d.address.indexOf(self.select_cate) > -1 &&
-    //         (d.name.indexOf(self.select_word) > -1 ||
-    //           d.address.indexOf(self.select_word) > -1)
-    //       ) {
-    //         return d;
-    //       }
-    //     }
-    //   });
-    // }
   },
   methods: {
+    getTime(row, column) {
+      const res = getDate.fmtDate(row.time);
+      return res;
+    },
     getList(status) {
       api.getList(status)
         .then((res) => {
           this.tableData2 = res.data;
           console.log(res.data);
         });
+      api.getpage(status)
+        .then((res) => {
+          console.log('获取条目');
+          this.cTotal = res.data[0].NumberOfOrders;
+        });
     },
     handleCurrentChange(val) {
       this.cur_page = val;
-      // this.getData();
+      this.getPageData(this.statusMap[this.type || 0], val);
     },
-    getData() {
-      const self = this;
-      if (process.env.NODE_ENV === 'development') {
-        self.url = '/ms/table/list';
-      }
-      // self.$axios.post(self.url, {page:self.cur_page}).then((res) => {
-      //     self.tableData = res.data.list;
-      // })
-    },
-    search() {
-      this.is_search = true;
+    getPageData(st, vl) {
+      console.log(st, vl);
+
+      api.getPageList(st, vl)
+        .then((res) => {
+          console.log('翻页===');
+          console.log(res);
+          this.tableData2 = res.data;
+        });
     },
     formatter(row, column) {
       return row.address;
@@ -142,39 +136,47 @@ export default {
     filterTag(value, row) {
       return row.tag === value;
     },
-    handleEdit(index, row) {
-      console.log('===');
-      console.log(this.$route.params.type);
+    handleEdit(index, scope) {
+      console.log('=====scope');
+      console.log(scope);
+      const id = scope.row.id || '';
+      const st = this.statusMap[this.type || 0];
+
       switch (this.$route.params.type) {
         case 'sun':
-          this.$router.push({ name: 'wcEditor', params: { index } });
+          this.$router.push({ name: 'wcEditor', params: { id, st } });
           break;
 
         case 'bashi':
-          this.$router.push({ name: 'wcEditor', params: { index } });
+          this.$router.push({ name: 'wcEditor', params: { id, st } });
           break;
 
         case 'fei':
-          this.$router.push({ name: 'feiEd', params: { index } });
+          this.$router.push({ name: 'feiEd', params: { id, st } });
           break;
 
         case 'zhaop':
-          this.$router.push({ name: 'jobEd', params: { index } });
+          this.$router.push({ name: 'jobEd', params: { id, st } });
           break;
 
         case 'news':
-          this.$router.push({ name: 'newsEditor', params: { index } });
+          this.$router.push({ name: 'newsEditor', params: { id, st } });
           break;
 
         default:
-          return false;
           break;
       }
 
       // this.$message('编辑第'+(index+1)+'行');
     },
-    handleDelete(index, row) {
+    handleDelete(index, row, scope) {
       this.$message.error(`删除第${index + 1}行`);
+      console.log(scope.row);
+      api.delList(scope.row.id, scope.row.status).then((res) => {
+        console.log('删除第${index + 1}行');
+        console.log(res);
+        this.getList(this.statusMap[this.type || 0]);
+      });
     },
     doAll() {
       const self = this;
@@ -193,22 +195,56 @@ export default {
       self.del_list = self.del_list.concat(self.multipleSelection);
 
       for (let i = 0; i < length; i++) {
-        str += `${self.multipleSelection[i].name} `;
+        str += `${self.multipleSelection[i].id}, `;
       }
       if (self.multipleSelection.length == 0) {
         self.$message({
           message: '请选择要删除的数据',
           type: 'warning',
         });
+        return;
       }
+
+      api.delAll(this.statusMap[this.type || 0], str)
+        .then((res) => {
+          console.log(res);
+          this.getList(this.statusMap[this.type || 0]);
+        });
       console.log(str);
       self.$message.error(`删除了${str}`);
     },
     addAll() {
-      const self = this;
-      // self.$router.push('/newseditor');
+      const id = '';
+      const st = this.statusMap[this.type || 0];
+      switch (this.$route.params.type) {
+        case 'sun':
+          this.$router.push({ name: 'wcEditor', params: { id, st } });
+          break;
+
+        case 'bashi':
+          this.$router.push({ name: 'wcEditor', params: { id, st } });
+          break;
+
+        case 'fei':
+          this.$router.push({ name: 'feiEd', params: { id, st } });
+          break;
+
+        case 'zhaop':
+          this.$router.push({ name: 'jobEd', params: { id, st } });
+          break;
+
+        case 'news':
+          this.$router.push({ name: 'newsEditor', params: { id, st } });
+          break;
+
+        default:
+          break;
+      }
     },
     handleSelectionChange(val) {
+      console.log(this.type);
+
+
       this.multipleSelection = val;
     },
   },

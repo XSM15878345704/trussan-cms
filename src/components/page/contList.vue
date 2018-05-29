@@ -1,50 +1,43 @@
 <template>
 
-    <div class="table">
-        <div class="handle-box">
-            <el-button type="primary" class="handle-del mr10" @click="doAll" v-if="is_del">批量操作</el-button>
-            <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll" v-if="is_nodel">批量删除</el-button>
-            <el-button type="primary" class="handle-del mr10" @click="cancleAll" v-if="is_nodel">取消</el-button>
-             <el-button type="primary" icon="plus" class="handle-del mr10 addbtn" @click="addAll">添加文章</el-button>
-        </div>
-        <el-table :data="tableData2" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55" v-if="is_nodel"></el-table-column>
-             <el-table-column prop="time" :formatter="getTime" label="时间" sortable >
-
-            </el-table-column>
-            <el-table-column prop="title" label="标题" >
-            </el-table-column>
-            <el-table-column prop="author" label="作者" width="120">
-            </el-table-column>
-            <el-table-column label="发布状态" width="120">
-              <template slot-scope="scope">
-                {{ scope.row.publish == 1 ? '发布' : '存草稿' }}
-            </template>
-            </el-table-column>
-            <el-table-column label="操作" width="180">
-                <template slot-scope="scope">
-
-                    <el-button size="small"
-                            @click="handleEdit(scope.$index, scope)">编辑</el-button>
-                    <el-button size="small" type="danger"
-                            @click="handleDelete(scope.$index, scope.row,scope)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <div class="pagination">
-            <el-pagination
-                    @current-change ="handleCurrentChange"
-                    :page-size="10"
-                    layout="total, prev, pager, next"
-                    :total="cTotal">
-            </el-pagination>
-        </div>
+  <div class="table">
+    <div class="handle-box">
+      <el-button type="primary" class="handle-del mr10" @click="doAll" v-if="is_del">批量操作</el-button>
+      <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll" v-if="is_nodel">批量删除</el-button>
+      <el-button type="primary" class="handle-del mr10" @click="cancleAll" v-if="is_nodel">取消</el-button>
+      <el-button type="primary" icon="plus" class="handle-del mr10 addbtn" @click="addAll">添加文章</el-button>
     </div>
+    <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" v-if="is_nodel"></el-table-column>
+      <el-table-column prop="time" :formatter="getTime" label="时间" sortable>
+
+      </el-table-column>
+      <el-table-column prop="title" label="标题">
+      </el-table-column>
+      <el-table-column prop="author" label="作者" width="120">
+      </el-table-column>
+      <el-table-column label="发布状态" width="120">
+        <template slot-scope="scope">
+          {{ scope.row.publish == 1 ? '发布' : '存草稿' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="180">
+        <template slot-scope="scope">
+
+          <el-button size="small" @click="handleEdit(scope.$index, scope)">编辑</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row,scope)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="pagination">
+      <el-pagination @current-change="handleCurrentChange" :page-size="10" layout="total, prev, pager, next" :total="cTotal">
+      </el-pagination>
+    </div>
+  </div>
 
 </template>
 
 <script>
-
 import api from '@/api';
 import getDate from '@/date';
 
@@ -59,21 +52,12 @@ export default {
       del_list: [],
       is_del: true,
       is_nodel: false,
-      tableData2: [],
       thisPath: this.$route.params.type,
       cTotal: 0,
     };
   },
   created() {
     this.getList(this.statusMap[this.type || 0]);
-    // const self = this;
-    // const selectUrl = '/select';
-    // self.$axios.get(self.url).then((res) => {
-    //   self.tableData2 = res.data.list;
-    //   self.$axios.get(selectUrl).then((res) => {
-    //     console.log(res);
-    //   });
-    // });
   },
   watch: {
     '$route.path': function () {
@@ -107,7 +91,7 @@ export default {
     getList(status) {
       api.getList(status)
         .then((res) => {
-          this.tableData2 = res.data;
+          this.tableData = res.data;
           console.log(res.data);
         });
       api.getpage(status)
@@ -144,23 +128,53 @@ export default {
 
       switch (this.$route.params.type) {
         case 'sun':
-          this.$router.push({ name: 'wcEditor', params: { id, st } });
+          this.$router.push({
+            name: 'wcEditor',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         case 'bashi':
-          this.$router.push({ name: 'wcEditor', params: { id, st } });
+          this.$router.push({
+            name: 'wcEditor',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         case 'fei':
-          this.$router.push({ name: 'feiEd', params: { id, st } });
+          this.$router.push({
+            name: 'feiEd',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         case 'zhaop':
-          this.$router.push({ name: 'jobEd', params: { id, st } });
+          this.$router.push({
+            name: 'jobEd',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         case 'news':
-          this.$router.push({ name: 'newsEditor', params: { id, st } });
+          this.$router.push({
+            name: 'newsEditor',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         default:
@@ -189,16 +203,15 @@ export default {
       self.is_del = true;
     },
     delAll() {
-      const self = this,
-        length = self.multipleSelection.length;
+      const length = this.multipleSelection.length;
       let str = '';
-      self.del_list = self.del_list.concat(self.multipleSelection);
+      this.del_list = this.del_list.concat(this.multipleSelection);
 
       for (let i = 0; i < length; i++) {
         str += `${self.multipleSelection[i].id}, `;
       }
-      if (self.multipleSelection.length == 0) {
-        self.$message({
+      if (this.multipleSelection.length === 0) {
+        this.$message({
           message: '请选择要删除的数据',
           type: 'warning',
         });
@@ -211,30 +224,60 @@ export default {
           this.getList(this.statusMap[this.type || 0]);
         });
       console.log(str);
-      self.$message.error(`删除了${str}`);
+      this.$message.error(`删除了${str}`);
     },
     addAll() {
       const id = '';
       const st = this.statusMap[this.type || 0];
       switch (this.$route.params.type) {
         case 'sun':
-          this.$router.push({ name: 'wcEditor', params: { id, st } });
+          this.$router.push({
+            name: 'wcEditor',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         case 'bashi':
-          this.$router.push({ name: 'wcEditor', params: { id, st } });
+          this.$router.push({
+            name: 'wcEditor',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         case 'fei':
-          this.$router.push({ name: 'feiEd', params: { id, st } });
+          this.$router.push({
+            name: 'feiEd',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         case 'zhaop':
-          this.$router.push({ name: 'jobEd', params: { id, st } });
+          this.$router.push({
+            name: 'jobEd',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         case 'news':
-          this.$router.push({ name: 'newsEditor', params: { id, st } });
+          this.$router.push({
+            name: 'newsEditor',
+            params: {
+              id,
+              st,
+            },
+          });
           break;
 
         default:
@@ -249,20 +292,25 @@ export default {
     },
   },
 };
+
 </script>
 
 <style scoped>
-.handle-box {
-  margin-bottom: 20px;
-}
-.handle-select {
-  width: 120px;
-}
-.handle-input {
-  width: 300px;
-  display: inline-block;
-}
-.addbtn {
-  float: right;
-}
+  .handle-box {
+    margin-bottom: 20px;
+  }
+
+  .handle-select {
+    width: 120px;
+  }
+
+  .handle-input {
+    width: 300px;
+    display: inline-block;
+  }
+
+  .addbtn {
+    float: right;
+  }
+
 </style>

@@ -69,7 +69,8 @@ export default {
     };
   },
   components: {
-    quillEditor, quillRedefine, // 注册组件
+    quillEditor,
+    quillRedefine, // 注册组件
   },
   watch: {
     '$route.path': function () {
@@ -129,9 +130,9 @@ export default {
       .addHandler('video', this.videoHandler); // 为视频ICON绑定事件
   },
   methods: {
+
     // 点击图片ICON触发事件
     imgHandler(state) {
-
       console.log('图片');
       console.log(state);
 
@@ -173,7 +174,6 @@ export default {
       console.log(this);
     },
     isSubmit() { // 发布
-
       this.saveData(params, this.$route.params.id, 1);
     },
     draftFn() { // 保存草稿
@@ -208,39 +208,45 @@ export default {
     },
   },
 };
+
 </script>
 <style>
-.el-form-item__label {
-  text-align: center;
-}
-.avatar-uploader .el-upload {
-  width: 120px;
-  height: 120px;
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #20a0ff;
-}
-.avatar-uploader {
-  width: 120px;
-  height: 120px;
-}
-.avatar-uploader-icon {
-  font-size: 14px;
-  color: #8c939d;
-  width: 120px;
-  height: 120px;
-  line-height: 120px;
-  text-align: center;
-}
-.avatar {
-  width: 120px;
-  height: 120px;
-  display: block;
-}
-</style>
+  .el-form-item__label {
+    text-align: center;
+  }
 
+  .avatar-uploader .el-upload {
+    width: 120px;
+    height: 120px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .avatar-uploader .el-upload:hover {
+    border-color: #20a0ff;
+  }
+
+  .avatar-uploader {
+    width: 120px;
+    height: 120px;
+  }
+
+  .avatar-uploader-icon {
+    font-size: 14px;
+    color: #8c939d;
+    width: 120px;
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    display: block;
+  }
+
+</style>
